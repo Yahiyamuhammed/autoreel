@@ -17,7 +17,7 @@ router.get('/', async function(req, res, next) {
       // console.log("images ==",images);
 
       // Compile video using fetched images
-      await userHelpers.compile( );
+      // await userHelpers.compile( );
 
        // Create script asynchronously
     // const script = await userHelpers.createInstaReelScript('basil');
@@ -26,7 +26,8 @@ router.get('/', async function(req, res, next) {
     // await userHelpers.voiceoverNew("Create a 30-second script for an Instagram Reel about travel tips ");
     // await userHelpers.tts();
     // userHelpers.testapi();
-    // userHelpers.voiceOverPython();
+    // await userHelpers.voiceOverPython();
+    await userHelpers.compile();
 
 
       // Render the index view after video compilation

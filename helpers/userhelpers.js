@@ -174,76 +174,85 @@ fetchMedia: (query) => {
         }
     });
 },
+shuffleArrayVedios : (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+},
 
 
 compile:()=>{
-    return new Promise(async(resolve,reject) =>
-        {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const videosDir = path.join(__dirname, '../public/images'); // Directory containing video files
+            const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4'); // Output video path
+            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
+            const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file
 
-            const imagesDir = path.join(__dirname, '../public/images');
+            console.log("Download started");
+            console.log("Audio file path:", audioFilePath);
+            console.log("Subtitles file path:", subtitlesFilePath);
 
-            console.log("dowload started");
-            // Download all images
-            // const imagePaths = await Promise.all(images.map(async (url, index) => {
-            //     const imagePath = path.join(imagesDir, `.${index + 1}`);
-            //     await module.exports.downloadImage(url, imagePath);
-            //     return imagePath;
-            // }));
-                // Assuming you want to remove all relative path components from `__dirname`
-                const outputVideoPath = path.join('public/videos', 'output.mp4'); 
-                // const outputVideoPath ='output.mp4'
-                console.log(outputVideoPath);
 
-                const mediaFolder = path.join(__dirname, '../public/images');
+            // Get the list of video files
+            let videoFiles = fs.readdirSync(videosDir).filter(file => file.match(/^vid\d+\.mp4$/));
 
-                // Get image and video files
-                const imageFiles = fs.readdirSync(mediaFolder).filter(file => file.match(/^image\d+\.jpg$/));
-                const videoFiles = fs.readdirSync(mediaFolder).filter(file => file.match(/^video\d+\.mp4$/));
+            // Shuffle video files
+            videoFiles =module.exports. shuffleArrayVedios(videoFiles);
 
-                // Create a new ffmpeg command
-                const command = ffmpeg();
 
-                // Add image inputs with loop and framerate options
-                imageFiles.forEach(image => {
-                    command.input(path.join(mediaFolder, image)).inputOptions(['-loop 1', '-framerate 24', '-t 1']);
-                });
+            // Create a new FFmpeg command
+            const command = ffmpeg();
 
-                // Add video inputs
-                videoFiles.forEach(video => {
-                    command.input(path.join(mediaFolder, video));
-                });
+            // Add video inputs
+            videoFiles.forEach(video => {
+                command.input(path.join(videosDir, video));
+            });
 
+            // Add audio input separately
+            command.input(audioFilePath);
+           
+
+            // Add filter_complex for concatenating videos
+            const filterComplex = [
+                `concat=n=${videoFiles.length}:v=1:a=0[outv]`, // Concatenate video files
+                `[${videoFiles.length}:a]atempo=1.25[a]` // Adjust the audio speed; `1.5` means 1.5x speed
                 
-                // Construct the filter_complex and map options
-                const filterComplex = [];
-                const mapOptions = [];
 
-                imageFiles.concat(videoFiles).forEach((file, index) => {
-                    filterComplex.push(`[${index}:v]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,setsar=1[v${index}]`);
-                    mapOptions.push(`[v${index}]`);
-                });
+            ];
 
-                filterComplex.push(`${mapOptions.join('')}concat=n=${imageFiles.length + videoFiles.length}:v=1:a=0[outv]`);
+            // Adjust the map options to correctly handle the video and modified audio
+            command
 
-                command
-                    .complexFilter(filterComplex)
-                    .map('[outv]')
-                    .output(outputVideoPath)
-                    .on('start', (commandLine) => {
-                        console.log('Spawned FFmpeg with command: ' + commandLine);
-                    })
-                    .on('progress', (progress) => {
-                        console.log('Processing: ' + JSON.stringify(progress) + '% done');
-                    })
-                    .on('end', () => {
-                        console.log('Video compilation finished!');
-                    })
-                    .on('error', (err) => {
-                        console.error('Error during video compilation:', err);
-                    })
-                    .run();
+                .complexFilter(filterComplex)
+                .outputOptions(['-map [outv]', '-map [a]', '-shortest']) // Map adjusted video and audio, and limit to the shortest stream
+                
 
-         } )
+                .output(outputVideoPath)
+               
+                .on('start', (commandLine) => {
+                    console.log('Spawned FFmpeg with command: ' + commandLine);
+                })
+                .on('progress', (progress) => {
+                    console.log('Processing: ' + JSON.stringify(progress) + '% done');
+                })
+                .on('end', () => {
+                    console.log('Video compilation finished!');
+                    resolve();
+                })
+                .on('error', (err) => {
+                    console.error('Error during video compilation:', err);
+                    reject(err);
+                })
+                .run();
+
+        } catch (err) {
+            console.error('Error during processing:', err);
+            reject(err);
+        }
+    });
 },
 createInstagramReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
@@ -414,19 +423,22 @@ voiceOverPython :()=>
         const text = "hi hello , Did you know that 20% of people admit to procrastinating more than half of their work tasks? If you're one of them, don't worry! You can overcome procrastination by breaking down tasks into smaller chunks. Start with the *easiest* one today, and you'll be surprised how quickly you make progress. Remember, procrastination is just a habit, and like any habit, you can break it with consistency and determination. So, what are you waiting for? Embrace the power of action today!";
         const pythonScriptPath = path.join(__dirname, '../bark-ai/barkai.py');
         const outputFilePath = path.join(__dirname, '../voiceOver/voiceover.wav');
+        const outputSrtFilePath = path.join(__dirname, '../voiceOver/subtitles.srt');
+
 
 
         // Execute the Python script
-        exec(`python ${pythonScriptPath} "${text}"  "${outputFilePath}" `, (error, stdout, stderr) => {
+        exec(`python ${pythonScriptPath} "${text}"  "${outputFilePath}" "${outputSrtFilePath}" `, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error: ${error.message}`);
-            return;
+            reject();
         }
         if (stderr) {
             console.error(`Stderr: ${stderr}`);
-            return;
+            reject();
         }
         console.log(`Stdout: ${stdout}`);
+        resolve()
         });
     })
 },
