@@ -12,6 +12,7 @@ const gtts = require('node-gtts')('en');
 const { exec } = require('child_process');
 
 
+
 const mary = require('../configurations/tts');
 // const fs = require('fs');
 
@@ -182,26 +183,24 @@ shuffleArrayVedios : (array) => {
     return array;
 },
 
-
-compile:()=>{
+compile: () => {
     return new Promise(async (resolve, reject) => {
         try {
             const videosDir = path.join(__dirname, '../public/images'); // Directory containing video files
             const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4'); // Output video path
             const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
-            const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file
+            // const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file (using .srt format)
+            const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
 
-            console.log("Download started");
+
             console.log("Audio file path:", audioFilePath);
             console.log("Subtitles file path:", subtitlesFilePath);
-
 
             // Get the list of video files
             let videoFiles = fs.readdirSync(videosDir).filter(file => file.match(/^vid\d+\.mp4$/));
 
             // Shuffle video files
-            videoFiles =module.exports. shuffleArrayVedios(videoFiles);
-
+            videoFiles = module.exports.shuffleArrayVedios(videoFiles);
 
             // Create a new FFmpeg command
             const command = ffmpeg();
@@ -213,25 +212,19 @@ compile:()=>{
 
             // Add audio input separately
             command.input(audioFilePath);
-           
 
-            // Add filter_complex for concatenating videos
+            // Create the filter_complex command
             const filterComplex = [
-                `concat=n=${videoFiles.length}:v=1:a=0[outv]`, // Concatenate video files
-                `[${videoFiles.length}:a]atempo=1.25[a]` // Adjust the audio speed; `1.5` means 1.5x speed
-                
-
+                `[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v][9:v][10:v][11:v][12:v]concat=n=${videoFiles.length}:v=1:a=0[outv]`, // Concatenate video files
+                `[outv]subtitles='${subtitlesFilePath}'[outv_with_subs]`, // Apply subtitles using subtitles filter
+                `[${videoFiles.length}:a]atempo=1.25[a]` // Adjust the audio speed; `1.25` means 1.25x speed
             ];
 
             // Adjust the map options to correctly handle the video and modified audio
             command
-
-                .complexFilter(filterComplex)
-                .outputOptions(['-map [outv]', '-map [a]', '-shortest']) // Map adjusted video and audio, and limit to the shortest stream
-                
-
+                .complexFilter(filterComplex.join(';'))
+                .outputOptions(['-map [outv_with_subs]', '-map [a]', '-shortest']) // Map adjusted video and audio, and limit to the shortest stream
                 .output(outputVideoPath)
-               
                 .on('start', (commandLine) => {
                     console.log('Spawned FFmpeg with command: ' + commandLine);
                 })
@@ -254,6 +247,7 @@ compile:()=>{
         }
     });
 },
+
 createInstagramReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
         console.log("entered prompt");
@@ -442,4 +436,31 @@ voiceOverPython :()=>
         });
     })
 },
+
+
+
+srt :()=>
+    {
+        return new Promise ((resolve ,reject)=>
+        {
+            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
+            const outputVideoPath = path.join(__dirname, '../public/videos', 'output.srt'); // Output video path
+            const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
+
+
+            ffmpeg(audioFilePath)
+            .addOption('-vn') // Exclude video
+            .addOption('-acodec', 'copy') // Copy audio codec
+            .addOption('-ss', '00:00:00') // Start time
+            .addOption('-to', '00:00:30') // End time (30 seconds)
+            .addOption('-f', 'srt') // Output format
+            .save(subtitlesFilePath)
+            .on('end', () => {
+                console.log('Subtitles extracted successfully!');
+            })
+            .on('error', (err) => {
+                console.error(err);
+            });
+        })
+    },
 }

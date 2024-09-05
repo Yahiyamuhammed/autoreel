@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "type": "module" 
+    "type": "module"
   },
-  
   "dependencies": {
     "@fonoster/marytts": "^0.3.31",
     "@google-cloud/text-to-speech": "^5.4.0",
