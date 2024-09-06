@@ -27,9 +27,9 @@ router.get('/', async function(req, res, next) {
     // await userHelpers.tts();
     // userHelpers.testapi();
     // await userHelpers.voiceOverPython();
-    // await userHelpers.compile();
+    await userHelpers.compile();
 
-    userHelpers.srt();
+    // userHelpers.srt();
 
 
       // Render the index view after video compilation

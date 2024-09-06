@@ -9,7 +9,7 @@ const { compile } = require('morgan');
 const OpenAI = require('openai');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const gtts = require('node-gtts')('en');
-const { exec } = require('child_process');
+const { exec ,spawn} = require('child_process');
 
 
 
@@ -188,7 +188,7 @@ compile: () => {
         try {
             const videosDir = path.join(__dirname, '../public/images'); // Directory containing video files
             const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4'); // Output video path
-            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
+            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceoverCut.wav'); // Path to the audio file
             // const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file (using .srt format)
             const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
 
@@ -215,11 +215,11 @@ compile: () => {
 
             // Create the filter_complex command
             const filterComplex = [
-                `[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v][9:v][10:v][11:v][12:v]concat=n=${videoFiles.length}:v=1:a=0[outv]`, // Concatenate video files
-                `[outv]subtitles='${subtitlesFilePath}'[outv_with_subs]`, // Apply subtitles using subtitles filter
-                `[${videoFiles.length}:a]atempo=1.25[a]` // Adjust the audio speed; `1.25` means 1.25x speed
+                `[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v][9:v][10:v][11:v][12:v]concat=n=${videoFiles.length}:v=1:a=0[outv]`,
+                `[outv]eq=brightness=-0.1:contrast=1.1[darkened]`,
+                `[darkened]subtitles='${subtitlesFilePath}':force_style='FontSize=34,Alignment=10,OutlineColour=&H00000000,BorderStyle=1,FontName=Arial,FontWeight=1000'[outv_with_subs]`,
+                `[${videoFiles.length}:a]atempo=1[a]`
             ];
-
             // Adjust the map options to correctly handle the video and modified audio
             command
                 .complexFilter(filterComplex.join(';'))
@@ -415,24 +415,40 @@ voiceOverPython :()=>
     return new Promise ((resolve ,reject)=>
     {
         const text = "hi hello , Did you know that 20% of people admit to procrastinating more than half of their work tasks? If you're one of them, don't worry! You can overcome procrastination by breaking down tasks into smaller chunks. Start with the *easiest* one today, and you'll be surprised how quickly you make progress. Remember, procrastination is just a habit, and like any habit, you can break it with consistency and determination. So, what are you waiting for? Embrace the power of action today!";
+        // const text="hello this is thannu";
         const pythonScriptPath = path.join(__dirname, '../bark-ai/barkai.py');
         const outputFilePath = path.join(__dirname, '../voiceOver/voiceover.wav');
+        const outputAudioPathSpeed = path.join(__dirname, '../voiceOver/voiceoverSpeed.wav');
         const outputSrtFilePath = path.join(__dirname, '../voiceOver/subtitles.srt');
+        const piperExe = path.join(__dirname, '../bark-ai/piper/piper.exe');
+        const piperVoice=path.join(__dirname,'../bark-ai/piper/voices');
+
 
 
 
         // Execute the Python script
-        exec(`python ${pythonScriptPath} "${text}"  "${outputFilePath}" "${outputSrtFilePath}" `, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error: ${error.message}`);
-            reject();
-        }
-        if (stderr) {
-            console.error(`Stderr: ${stderr}`);
-            reject();
-        }
-        console.log(`Stdout: ${stdout}`);
-        resolve()
+        // Use spawn instead of exec
+        const pythonProcess = spawn('python', [pythonScriptPath, text, outputFilePath, outputSrtFilePath, outputAudioPathSpeed,piperExe,piperVoice]);
+
+        // Listen for data on stdout
+        pythonProcess.stdout.on('data', (data) => {
+            console.log(`Stdout: ${data}`);
+        });
+
+        // Listen for data on stderr
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`Stderr: ${data}`);
+        });
+
+        // Listen for the close event to resolve or reject the promise
+        pythonProcess.on('close', (code) => {
+            if (code === 0) {
+                console.log("python completed");
+                
+                resolve();
+            } else {
+                reject(new Error(`Python script exited with code ${code}`));
+            }
         });
     })
 },
