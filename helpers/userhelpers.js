@@ -248,27 +248,6 @@ compile: () => {
     });
 },
 
-createInstagramReelScript : (topic) => {
-    return new Promise(async (resolve, reject) => {
-        console.log("entered prompt");
-        const prompt = `Create a script for an Instagram reel about "${topic}". The script should be engaging, suitable for a voice-over, and last around 30 seconds.`;
-
-        try {
-            const completion = await openai.chat.completions.create({
-                messages: [{ role: "user", content: `Create a script for an Instagram reel about "${topic}". The script should be engaging, suitable for a voice-over, and last around 30 seconds.` }],
-                model: "gpt-3.5-turbo", 
-            });
-    
-            const script = completion.choices[0].message.content.trim();
-            console.log("Generated Script: ", script);
-            return script;
-        } catch (error) {
-            console.error("Error generating script: ", error);
-            throw error;
-        }
-
-    })
-},
 
 createInstaReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
@@ -292,124 +271,6 @@ createInstaReelScript : (topic) => {
     })
 },
 
- generateVoiceOverFromScript : (script, filename = 'voiceover.wav') => {
-    return new Promise((resolve, reject) => {
-      console.log("Creating voice-over...");
-      console.log("text =",script);
-      // Check if script is provided and convert to string if necessary
-    if (script == null) {
-        return reject(new Error("Script is null or undefined"));
-      }
-  
-      // Convert script to string if it's not already
-      const scriptString = String(script);
-  
-      // Check if the script is empty after conversion
-      if (scriptString.trim().length === 0) {
-        return reject(new Error("Script is empty"));
-      }
-  
-      const filepath = path.join(__dirname, filename);
-      gtts.save(filepath, scriptString, (err) => {
-        if (err) {
-          console.error("Error saving voice-over:", err);
-          reject(err);
-        } else {
-          console.log('Voice-over saved successfully');
-          resolve(filepath);
-        }
-      });
-    });
-  },
-
-  voiceover : ()=>
-  {
-    return new Promise (async(resolve,reject)=>
-    {
-        // Convert text to speech
-        const request = {
-            input: { text: 'Hello, welcome to our website!' },
-            voice: { languageCode: 'en-GB', ssmlGender: 'MALE' },
-            audioConfig: { audioEncoding: 'MP3' },
-          };
-        
-         try {
-    const response = await axios.post('http://localhost:5002/api/tts', {
-      text: text,
-      voice: 'en_us_male', // Example voice parameter
-    });
-
-    const audioContent = response.data.audioContent;
-
-    // Save the audio content to a file
-    const writeFile = util.promisify(fs.writeFile);
-    await writeFile('output.wav', Buffer.from(audioContent, 'base64'));
-
-    console.log('Audio content written to file: output.wav');
-  } catch (error) {
-    console.error('Error generating speech:', error.message);
-  }
-    })
-  },
-  // Create a client
-
- voiceoverNew : (prompt) => {
-  return new Promise(async(resolve, reject) => {
-    const API_TOKEN = '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';
-    const MODEL_NAME = 'EleutherAI/gpt-neox-20b '; 
-    // Text to be converted to speech
-    // responsiveVoice.speak("hello world");
-    try {
-        const response = await axios.post(
-          `https://api-inference.huggingface.co/models/${MODEL_NAME}`,
-          { inputs: prompt },
-          {
-            headers: {
-              Authorization: `Bearer ${API_TOKEN}`,
-            },
-          }
-        );
-    
-        const generatedText = response.data[0]?.generated_text || "No output generated.";
-        console.log(generatedText);
-      } catch (error) {
-        console.error('Error generating text:', error.response?.data || error.message);
-      }
-  });
-},
-
-tts : () => {
-    return new Promise(async(resolve, reject) => {
-        const textToSpeak = "Hello, welcome to our website!";
-      const barkApiUrl = 'http://127.0.0.1:5000'; // Replace with your ngrok URL
-
-      try {
-        // Make a request to the Bark AI server
-        const response = await axios.post(barkApiUrl, {
-          text: textToSpeak
-        }, { responseType: 'arraybuffer' });
-
-        const audioContent = response.data;
-        const filePath = path.join(__dirname, '../public/audio/output.wav'); // Save to a public directory
-        fs.writeFileSync(filePath, Buffer.from(audioContent), 'binary');
-
-        resolve({ audioUrl: '/audio/output.wav' });
-      } catch (error) {
-        console.error('Error:', error.message);
-        reject(error);
-      }
-    })
-},
-testapi : () => {
-    return new Promise(async(resolve, reject) => {
-        const chatCompletion = await openai.chat.completions.create({
-            messages: [{ role: 'user', content: 'Say this is a test' }],
-            model: 'gpt-3.5-turbo',
-          });
-          
-          console.log(chatCompletion.choices[0].message.content);
-    })
-},
 voiceOverPython :()=>
 {
     return new Promise ((resolve ,reject)=>
@@ -452,31 +313,4 @@ voiceOverPython :()=>
         });
     })
 },
-
-
-
-srt :()=>
-    {
-        return new Promise ((resolve ,reject)=>
-        {
-            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
-            const outputVideoPath = path.join(__dirname, '../public/videos', 'output.srt'); // Output video path
-            const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
-
-
-            ffmpeg(audioFilePath)
-            .addOption('-vn') // Exclude video
-            .addOption('-acodec', 'copy') // Copy audio codec
-            .addOption('-ss', '00:00:00') // Start time
-            .addOption('-to', '00:00:30') // End time (30 seconds)
-            .addOption('-f', 'srt') // Output format
-            .save(subtitlesFilePath)
-            .on('end', () => {
-                console.log('Subtitles extracted successfully!');
-            })
-            .on('error', (err) => {
-                console.error(err);
-            });
-        })
-    },
 }
