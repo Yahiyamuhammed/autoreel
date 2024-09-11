@@ -26,7 +26,9 @@ router.get('/', async function(req, res, next) {
     // await userHelpers.voiceoverNew("Create a 30-second script for an Instagram Reel about travel tips ");
     // await userHelpers.tts();
     // userHelpers.testapi();
-    const script=userHelpers.createInstaReelScript();
+    const script=await userHelpers.createInstaReelScript();
+    console.log("script =",script);
+    
 
     await userHelpers.voiceOverPython(script);
     await userHelpers.compile();

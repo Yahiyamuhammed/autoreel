@@ -279,7 +279,7 @@ createInstaReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
 
         console.log("Entered prompt");
-        const prompt = `Generate a 30-second motivational voiceover script for an Instagram and YouTube reel. The script should start with an attention-grabbing question or surprising fact, followed by a motivational message about overcoming procrastination. Include a practical productivity hack that viewers can apply immediately, and end with an inspiring call to action. The tone should be upbeat, energetic, and engaging, with no headings, labels, or formatting cues—just the plain text for the voiceover.`;
+        const prompt = `Generate a 30-second motivational voiceover script for an Instagram and YouTube reel featuring luxury backgrounds. Start with an attention-grabbing statement or intriguing fact that evokes a sense of elegance or opulence. Follow with a motivational message that inspires viewers to pursue their highest potential or embrace a refined lifestyle. Include a practical tip or actionable advice that aligns with a luxurious and aspirational theme. End with an uplifting call to action that encourages viewers to elevate their lives. The tone should be sophisticated, aspirational, and engaging, with no headings, labels, or formatting cues—just the plain text for the voiceover`;
     
         try {
           // Use the gemini-pro model
@@ -512,7 +512,7 @@ publishToInstagram:(creationId,vedioLink)=>
         
                 try {
                 const newCreationId = await module.exports.uploadToInstagram(vedioLink); // Call the re-upload function
-                await userHelpers.publishToInstagram(newCreationId); // Attempt to publish with the new creation ID
+                await module.exports.publishToInstagram(newCreationId); // Attempt to publish with the new creation ID
                 resolve(); // Resolve if the second attempt is successful
                 } catch (reUploadError) {
                 console.error('Re-upload and publish failed:', reUploadError);
