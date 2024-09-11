@@ -26,8 +26,13 @@ router.get('/', async function(req, res, next) {
     // await userHelpers.voiceoverNew("Create a 30-second script for an Instagram Reel about travel tips ");
     // await userHelpers.tts();
     // userHelpers.testapi();
-    // await userHelpers.voiceOverPython();
+    const script=userHelpers.createInstaReelScript();
+
+    await userHelpers.voiceOverPython(script);
     await userHelpers.compile();
+    const downloadLink= await userHelpers.uploadToTransferSh()
+    const creationId=await userHelpers.uploadToInstagram(downloadLink);
+    await userHelpers.publishToInstagram(creationId,downloadLink);
 
     // userHelpers.srt();
 
