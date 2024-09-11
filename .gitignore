@@ -1,3 +1,5 @@
 temp/
 node_modules/
 public/images/
+env/
+public/vedios
