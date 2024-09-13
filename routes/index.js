@@ -11,10 +11,10 @@ router.get('/reel', async function(req, res, next) {
 
       console.log("User requested the route");
 
-    const script=await userHelpers.createInstaReelScript();
-    console.log("script =",script);
+    // const script=await userHelpers.createInstaReelScript();
+    // console.log("script =",script);
     // await userHelpers.voiceOverPython(script);
-    // await userHelpers.compile();
+    await userHelpers.compile();
     // const downloadLink= await userHelpers.uploadToTransferSh()
     // const creationId=await userHelpers.uploadToInstagram(downloadLink);
     // userHelpers.publishToInstagram(creationId,downloadLink);
