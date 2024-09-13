@@ -4,7 +4,7 @@ var userHelpers = require ('../helpers/userhelpers')
 const script=
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
+router.get('/reel', async function(req, res, next) {
   try {
     res.render('index', { title: 'sdwakdens' });
     // res.render('../views/output');  
