@@ -15,7 +15,7 @@ router.get('/reel', async function(req, res, next) {
     // console.log("script =",script);
     // const script="hi hello";
     // await userHelpers.voiceOverPython(script);
-    // await userHelpers.compile();
+    await userHelpers.compile();
     // const downloadLink= await userHelpers.uploadToTransferSh()
     // const creationId=await userHelpers.uploadToInstagram(downloadLink);
     // userHelpers.publishToInstagram(creationId,downloadLink);
