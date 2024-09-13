@@ -195,16 +195,13 @@ shuffleArrayVedios : (array) => {
 compile: () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const videosDir = path.join(__dirname, '../public/images'); // Directory containing video files
-            const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4'); // Output video path
-            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
-            // const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file (using .srt format)
-            // const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
-            const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the audio file
-
+            const videosDir = path.join(__dirname, '../public/images');
+            const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4');
+            const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav');
+            const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt');
 
             console.log("Audio file path:", audioFilePath);
-            console.log("vedio file path:", videosDir);
+            console.log("Video file path:", videosDir);
             console.log("Subtitles file path:", subtitlesFilePath);
 
             // Get the list of video files
@@ -213,10 +210,11 @@ compile: () => {
             // Shuffle video files
             videoFiles = module.exports.shuffleArrayVedios(videoFiles);
 
-            // Create a new FFmpeg command
-            // const command = ffmpeg();
-            const command = ffmpeg({ ffmpegPath }); // Use the ffmpeg-static binary path
+            // Limit the number of videos to process (adjust as needed)
+            const maxVideos = 5;
+            videoFiles = videoFiles.slice(0, maxVideos);
 
+            const command = ffmpeg({ ffmpegPath });
 
             // Add video inputs
             videoFiles.forEach(video => {
@@ -226,13 +224,12 @@ compile: () => {
             // Add audio input separately
             command.input(audioFilePath);
 
-            // Create the filter_complex command
+            // Simplified filter_complex
             const filterComplex = [
-                `[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v][9:v][10:v][11:v][12:v]concat=n=${videoFiles.length}:v=1:a=0[outv]`,
-                `[outv]eq=brightness=-0.1:contrast=1.1[darkened]`,
-                `[darkened]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[scaled]`,  // 9:16 aspect ratio
-                `[scaled]subtitles='${subtitlesFilePath.replace(/\\/g, '/').replace(/:/g, '\\:')}':force_style='FontSize=24,Alignment=10,OutlineColour=&H00000000,BorderStyle=1,FontName=Arial,FontWeight=1000'[outv_with_subs]`,
-                `[${videoFiles.length}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,volume=1.5[a]`
+                `concat=n=${videoFiles.length}:v=1:a=0[outv]`,
+                `[outv]scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2[scaled]`,
+                `[scaled]subtitles='${subtitlesFilePath.replace(/\\/g, '/').replace(/:/g, '\\:')}'[outv_with_subs]`,
+                `[${videoFiles.length}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo[a]`
             ];
 
             command
@@ -240,24 +237,21 @@ compile: () => {
                 .outputOptions([
                     '-map [outv_with_subs]',
                     '-map [a]',
-                    '-c:v libx264',  // H264 codec
-                    '-profile:v high',  // High profile for better quality
-                    '-level 4.2',
-                    '-preset slow',
-                    '-crf 23',
+                    '-c:v libx264',
+                    '-preset veryfast',  // Faster preset
+                    '-crf 28',           // Lower quality, but smaller file size
                     '-c:a aac',
-                    '-b:a 128k',
-                    '-ar 48000',
+                    '-b:a 96k',          // Lower audio bitrate
+                    '-ar 44100',         // Lower audio sample rate
+                    '-vf fps=24',        // Lower frame rate
                     '-movflags +faststart',
                     '-pix_fmt yuv420p',
-                    '-r 30',
-                    '-b:v 15M',  // Video bitrate (adjust as needed, max 25Mbps)
-                    '-maxrate 20M',
-                    '-bufsize 10M',
-                    '-t 900',  // Limit duration to 15 minutes (900 seconds)
-                    '-shortest',
-                    '-max_muxing_queue_size 1024'
-                ])// Map adjusted video and audio, and limit to the shortest stream
+                    '-b:v 1M',           // Lower video bitrate
+                    '-maxrate 1.5M',
+                    '-bufsize 2M',
+                    '-t 300',            // Limit to 5 minutes
+                    '-shortest'
+                ])
                 .output(outputVideoPath)
                 .on('start', (commandLine) => {
                     console.log('Spawned FFmpeg with command: ' + commandLine);
@@ -274,8 +268,8 @@ compile: () => {
                     reject(err);
                 })
                 .run();
-                console.log("finished");
-                
+
+            console.log("Command initiated");
 
         } catch (err) {
             console.error('Error during processing:', err);
@@ -283,7 +277,6 @@ compile: () => {
         }
     });
 },
-
 
 createInstaReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
