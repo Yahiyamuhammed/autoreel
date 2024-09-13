@@ -58,6 +58,7 @@ def download_piper_model(model_name, download_dir):
 
 
 def generate_audio_with_piper(text, model_name, output_file, piper_exe_path, model_dir):
+    newText='.'+text
     """Generates audio from text using Piper TTS and saves it as a WAV file."""
     print("Generating audio with Piper TTS...")
 
@@ -65,7 +66,7 @@ def generate_audio_with_piper(text, model_name, output_file, piper_exe_path, mod
     model_path = os.path.join(model_dir, f"{model_name}.onnx")
     
     # Construct the Piper command using the manually downloaded executable
-    command = f'echo "{text}" | "{piper_exe_path}" --model "{model_path}" --output_file "{output_file}"'
+    command = f'echo "{newText}" | "{piper_exe_path}" --model "{model_path}" --output_file "{output_file}"'
     
     try:
         # Run the Piper command to generate the audio file
