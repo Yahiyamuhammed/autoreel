@@ -199,7 +199,8 @@ compile: () => {
             const outputVideoPath = path.join(__dirname, '../public/videos', 'output.mp4'); // Output video path
             const audioFilePath = path.join(__dirname, '../voiceOver', 'voiceover.wav'); // Path to the audio file
             // const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the subtitles file (using .srt format)
-            const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
+            // const subtitlesFilePath = 'D\\:/programming/ai/voiceOver/subtitles.srt' // Path to the subtitles file (using .srt format)
+            const subtitlesFilePath = path.join(__dirname, '../voiceOver', 'subtitles.srt'); // Path to the audio file
 
 
             console.log("Audio file path:", audioFilePath);
@@ -230,7 +231,7 @@ compile: () => {
                 `[0:v][1:v][2:v][3:v][4:v][5:v][6:v][7:v][8:v][9:v][10:v][11:v][12:v]concat=n=${videoFiles.length}:v=1:a=0[outv]`,
                 `[outv]eq=brightness=-0.1:contrast=1.1[darkened]`,
                 `[darkened]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[scaled]`,  // 9:16 aspect ratio
-                `[scaled]subtitles='${subtitlesFilePath}':force_style='FontSize=24,Alignment=10,OutlineColour=&H00000000,BorderStyle=1,FontName=Arial,FontWeight=1000'[outv_with_subs]`,
+                `[scaled]subtitles='${subtitlesFilePath.replace(/\\/g, '/').replace(/:/g, '\\:')}':force_style='FontSize=24,Alignment=10,OutlineColour=&H00000000,BorderStyle=1,FontName=Arial,FontWeight=1000'[outv_with_subs]`,
                 `[${videoFiles.length}:a]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,volume=1.5[a]`
             ];
 
