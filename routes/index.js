@@ -11,17 +11,17 @@ router.get('/reel', async function(req, res, next) {
 
       console.log("User requested the route");
 
-    const script=await userHelpers.createInstaReelScript();
-    console.log("script =",script);
-    // const script="hi hello";
+    // const script=await userHelpers.createInstaReelScript();
+    // console.log("script =",script);
+    const script="hi hello";
     await userHelpers.voiceOverPython(script);
-    await userHelpers.compile();
-    const downloadLink= await userHelpers.uploadToTransferSh()
-    const creationId=await userHelpers.uploadToInstagram(downloadLink);
-    userHelpers.publishToInstagram(creationId,downloadLink);
+    // await userHelpers.compile();
+    // const downloadLink= await userHelpers.uploadToTransferSh()
+    // const creationId=await userHelpers.uploadToInstagram(downloadLink);
+    // userHelpers.publishToInstagram(creationId,downloadLink);
 
-    const downloadLinkFacebook= await userHelpers.uploadToTransferSh()
-    userHelpers.uploadToFacebook(downloadLinkFacebook);
+    // const downloadLinkFacebook= await userHelpers.uploadToTransferSh()
+    // userHelpers.uploadToFacebook(downloadLinkFacebook);
 
 
       // Render the index view after video compilation
