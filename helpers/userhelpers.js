@@ -289,7 +289,7 @@ createInstaReelScript : (topic) => {
     return new Promise(async (resolve, reject) => {
 
         console.log("Entered prompt");
-        const prompt = `Create a 30-second motivational voiceover script for an Instagram and YouTube reel with a luxury background theme. Start with a captivating question or surprising fact that conveys a sense of elegance and opulence to immediately grab the viewer’s attention. Follow with a motivational message that encourages viewers to reach their highest potential or adopt a refined lifestyle. Include a practical tip or piece of advice that aligns with this luxurious and aspirational theme. Conclude with an uplifting call to action that inspires viewers to elevate their lives. The tone should be sophisticated, aspirational, and engaging. Provide only just the plain text for the voiceover.`;
+        const prompt = `Create a 30-second motivational voiceover script for an Instagram and YouTube reel with a luxury background theme. Start with a captivating question or surprising fact that conveys a sense of elegance and opulence to immediately grab the viewer’s attention. Follow with a motivational message that encourages viewers to reach their highest potential or adopt a refined lifestyle. Include a practical tip or piece of advice that aligns with this luxurious and aspirational theme. Conclude with an uplifting call to action that inspires viewers to elevate their lives. The tone should be sophisticated, aspirational, and engaging , end with action calls like follow for more ,etc. Provide only just the plain text for the voiceover. include all these in one paragraph`;
     
         try {
           // Use the gemini-pro model

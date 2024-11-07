@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Reel Workflow</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main id="reelWorkflow">
+    <header>
+      <h1>🎥 Instagram Reel Creator</h1>
+      <div id="oneClickSection">
+        <button class="primary-btn" onclick="publishReel()">🚀 One-Click Reel Publish</button>
+      </div>
+    </header>
+
+    <!-- Script Review Section -->
+    <section id="scriptReview" class="active">
+      <div class="card">
+        <h2>Step 1: Review Script</h2>
+        <pre id="scriptContent" class="script-box">Your generated script will appear here...</pre>
+        <div class="button-group">
+          <button class="primary-btn" onclick="acceptScript()">✅ Accept Script</button>
+          <button class="secondary-btn" onclick="regenerateScript()">🔄 Regenerate Script</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Review Section -->
+    <section id="videoReview">
+      <div class="card">
+        <h2>Step 2: Review Video</h2>
+        <div id="videoContainer">
+          <video controls id="videoPlayer" class="video-box" style="display: none;"></video>
+          <p id="videoPlaceholder">🎬 The video will appear here after generation...</p>
+        </div>
+        <div class="button-group">
+          <button class="primary-btn" onclick="acceptVideo()">✅ Accept Video</button>
+          <button class="secondary-btn" onclick="regenerateVideo()">🔄 Regenerate Video</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress Section -->
+    <section id="progressSection">
+      <div class="card">
+        <h2>Progress</h2>
+        <progress id="progress" max="100" value="0"></progress>
+        <div id="log" class="log-box">Activity logs will appear here...</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/scripts/main.js"></script>
+</body>
+</html>

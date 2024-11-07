@@ -1,9 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var userHelpers = require ('../helpers/userhelpers')
-const script=
+// const script=
 
 /* GET home page. */
+router.get('/',(req,res)=>{
+  res.render('home-page')
+})
 router.get('/reel', async function(req, res, next) {
   try {
     res.render('index', { title: 'sdwakdens' });
@@ -13,12 +16,12 @@ router.get('/reel', async function(req, res, next) {
 
     // const script=await userHelpers.createInstaReelScript();
     // console.log("script =",script);
-    const script="hi hello";
-    await userHelpers.voiceOverPython(script);
+    // // const script="hi hello";
+    // await userHelpers.voiceOverPython(script);
     // await userHelpers.compile();
-    // const downloadLink= await userHelpers.uploadToTransferSh()
-    // const creationId=await userHelpers.uploadToInstagram(downloadLink);
-    // userHelpers.publishToInstagram(creationId,downloadLink);
+    const downloadLink= await userHelpers.uploadToTransferSh()
+    const creationId=await userHelpers.uploadToInstagram(downloadLink);
+    userHelpers.publishToInstagram(creationId,downloadLink);
 
     // const downloadLinkFacebook= await userHelpers.uploadToTransferSh()
     // userHelpers.uploadToFacebook(downloadLinkFacebook);

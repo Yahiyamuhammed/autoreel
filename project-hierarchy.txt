@@ -2,9 +2,10 @@ ai
 ├─ .env
 ├─ .gitignore
 ├─ app.js
-├─ bark ai
+├─ bark-ai
 │  ├─ barkai.py
-│  └─ output_gtts.mp3
+│  └─ piper
+│     
 ├─ bin
 │  └─ www
 ├─ configurations
@@ -12,6 +13,7 @@ ai
 ├─ helpers
 │  ├─ userhelpers.js
 │  └─ voiceover.wav
+├─ metadata.txt
 ├─ package-lock.json
 ├─ package.json
 ├─ project-hierarchy.txt
@@ -21,12 +23,27 @@ ai
 │  │  ├─ image2.jpg
 │  │  ├─ image3.jpg
 │  │  ├─ image4.jpg
+│  │  ├─ vid1.mp4
+│  │  ├─ vid10.mp4
+│  │  ├─ vid11.mp4
+│  │  ├─ vid12.mp4
+│  │  ├─ vid13.mp4
+│  │  ├─ vid2.mp4
+│  │  ├─ vid3.mp4
+│  │  ├─ vid4.mp4
+│  │  ├─ vid5.mp4
+│  │  ├─ vid6.mp4
+│  │  ├─ vid7.mp4
+│  │  ├─ vid8.mp4
+│  │  ├─ vid9.mp4
 │  │  ├─ video5.mp4
 │  │  ├─ video6.mp4
 │  │  ├─ video7.mp4
 │  │  └─ video8.mp4
 │  ├─ javascripts
+│  │  └─ main.js
 │  ├─ stylesheets
+│  │  ├─ main.css
 │  │  └─ style.css
 │  └─ videos
 │     └─ output.mp4
@@ -34,8 +51,13 @@ ai
 ├─ routes
 │  ├─ index.js
 │  └─ users.js
-└─ views
-   ├─ error.hbs
-   ├─ index.hbs
-   ├─ layout.hbs
-   └─ output.hbs
+├─ views
+│  ├─ error.hbs
+│  ├─ home-page.hbs
+│  ├─ index.hbs
+│  ├─ layout.hbs
+│  └─ output.hbs
+└─ voiceOver
+   ├─ subtitles.srt
+   ├─ voiceover.wav
+   └─ voiceoverCut.wav
