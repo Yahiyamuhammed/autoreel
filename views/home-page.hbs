@@ -29,19 +29,24 @@
     </section>
 
     <!-- Video Review Section -->
-    <section id="videoReview">
-      <div class="card">
-        <h2>Step 2: Review Video</h2>
-        <div id="videoContainer">
-          <video controls id="videoPlayer" class="video-box" style="display: none;"></video>
-          <p id="videoPlaceholder">🎬 The video will appear here after generation...</p>
-        </div>
-        <div class="button-group">
-          <button class="primary-btn" onclick="acceptVideo()">✅ Accept Video</button>
-          <button class="secondary-btn" onclick="regenerateVideo()">🔄 Regenerate Video</button>
-        </div>
-      </div>
-    </section>
+  <section id="videoReview">
+  <div class="card">
+    <h2>Step 2: Review Video</h2>
+    <div id="videoContainer">
+      <!-- Set a default video source for the video player -->
+      <video id="videoPlayer" class="video-box" style="display: block;" controls src="/public/videos/output.mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p id="videoPlaceholder" style="display: none;">🎬 The video will appear here after generation...</p>
+    </div>
+    <div class="button-group">
+      <button class="primary-btn" onclick="acceptVideo()">✅ Accept Video</button>
+      <button class="secondary-btn" onclick="regenerateVideo()">🔄 Regenerate Video</button>
+    </div>
+  </div>
+</section>
+
+
 
     <!-- Progress Section -->
     <section id="progressSection">
@@ -53,6 +58,6 @@
     </section>
   </main>
 
-  <script src="/scripts/main.js"></script>
+  <script src="../public/javascripts/main.js"></script>
 </body>
 </html>

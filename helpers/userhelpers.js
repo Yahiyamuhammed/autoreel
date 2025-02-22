@@ -267,7 +267,7 @@ compile: () => {
                 })
                 .on('end', () => {
                     console.log('Video compilation finished!');
-                    resolve();
+                    resolve(outputVideoPath);
                 })
                 .on('error', (err) => {
                     console.error('Error during video compilation:', err);
@@ -275,6 +275,7 @@ compile: () => {
                 })
                 .run();
                 console.log("finished");
+                // resolve(outputVideoPath)
                 
 
         } catch (err) {
@@ -389,7 +390,7 @@ publishToInstagram:(creationId,vedioLink)=>
     return new Promise(async(resolve,reject)=>
     {
         const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // Helper function for delay
-        const maxRetries = 5; // Maximum number of retry attempts
+        const maxRetries = 10; // Maximum number of retry attempts
         let attempts = 0; // Track the number of attempts
         let reUploadAttempted = false; // Track if re-upload has been attempted
 
@@ -443,37 +444,45 @@ publishToInstagram:(creationId,vedioLink)=>
     })
 
 },
- uploadToTransferSh : () => {
+uploadToTransferSh : () => {
     return new Promise(async (resolve, reject) => {
-     try{
+      try {
         const filePath = path.join(__dirname, '../public/videos', 'output.mp4');
-            const fileName = path.basename(filePath);
-            console.log("filename=", fileName);
+        const fileName = path.basename(filePath);
+        console.log("filename=", fileName);
 
-            // Create a FormData instance
-            const form = new FormData();
-            form.append('file', fs.createReadStream(filePath), fileName);
+        console.log('uploading to cloude ...');
+        
+  
 
-            // Upload the file to file.io
-            const response = await axios.post('https://file.io', form, {
-                headers: {
-                    ...form.getHeaders(),
-                },
-            });
-
-            // Get the file URL from the response
-            const fileUrl = response.data.link;
-            const fileUrlWithExtension = fileUrl + '.mp4';
-
-            console.log('File uploaded successfully:', fileUrlWithExtension);
-
-            resolve(fileUrlWithExtension);
-        } catch (error) {
-            console.error('Error uploading file:', error.message);
-            reject(error);
+        if (!fs.existsSync(filePath)) {
+          throw new Error('File not found');
         }
-    })
+  
+        // Prepare form data for catbox.moe API
+        const form = new FormData();
+        form.append("reqtype", "fileupload");
+        // Optionally, you can add a userhash if you have one; otherwise, omit it.
+        form.append("fileToUpload", fs.createReadStream(filePath), fileName);
+  
+        // Post the form data to catbox.moe's upload endpoint
+        const response = await axios.post("https://catbox.moe/user/api.php", form, {
+          headers: {
+            ...form.getHeaders(),
+          },
+        });
+  
+        // The response is plain text containing the direct video URL.
+        const fileUrl = response.data.trim();
+        console.log("File uploaded successfully:", fileUrl);
+        resolve(fileUrl);
+      } catch (error) {
+        console.error("Error uploading file:", error.message);
+        reject(error);
+      }
+    });
   },
+  
   uploadToFacebook:(url)=>
   {
     return new Promise(async(resolve,reject)=>

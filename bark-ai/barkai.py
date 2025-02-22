@@ -58,7 +58,7 @@ def download_piper_model(model_name, download_dir):
 
 
 def generate_audio_with_piper(text, model_name, output_file, piper_exe_path, model_dir):
-    newText='.'+text
+    newText=text
     """Generates audio from text using Piper TTS and saves it as a WAV file."""
     print("Generating audio with Piper TTS...")
 

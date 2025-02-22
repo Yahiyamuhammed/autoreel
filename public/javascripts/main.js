@@ -7,6 +7,20 @@ function showSection(sectionId) {
     document.getElementById(sectionId).classList.add('active');
   }
   
+  function publishReel() {
+    // Trigger the backend to generate and publish the reel
+    fetch('/reel/publish', { method: 'POST' })
+      .then((response) => response.json())
+      .then((data) => {
+        alert(data.message); // Notify the user that the reel generation is in progress
+        showSection('scriptReview'); // Move to script review
+        document.getElementById('scriptContent').textContent = data.script; // Load the script
+      })
+      .catch((error) => {
+        console.error('Error publishing reel:', error);
+      });
+  }
+  
   function acceptScript() {
     const script = document.getElementById('scriptContent').textContent;
   
@@ -61,10 +75,8 @@ function showSection(sectionId) {
       .then((data) => {
         alert(data.message);
         const videoPlayer = document.getElementById('videoPlayer');
-        const videoPlaceholder = document.getElementById('videoPlaceholder');
-        videoPlayer.src = '/path/to/new/video.mp4'; // Replace with the correct video URL
-        videoPlayer.style.display = 'block';
-        videoPlaceholder.style.display = 'none';
+        videoPlayer.style.display = 'none'; // Hide previous video
+        document.getElementById('videoPlaceholder').style.display = 'block'; // Show the placeholder
       })
       .catch((error) => {
         console.error('Error regenerating video:', error);
